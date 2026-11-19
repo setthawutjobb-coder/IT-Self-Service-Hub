@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ศูนย์ช่วยเหลือไอที (IT Self-Service Hub)</title>
+    <!-- โหลด Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- โหลดฟอนต์ Prompt และ Sarabun สำหรับภาษาไทยที่อ่านง่ายและทันสมัย -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- โหลด Font Awesome สำหรับไอคอน -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'Sarabun', 'sans-serif'],
+                        body: ['Sarabun', 'Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #f8fafc;
+        }
+        .guide-content {
+            font-family: 'Sarabun', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.25s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-checkbox:checked + label {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="resetFilters()">
+                    <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md shadow-brand-500/20">
+                        <i class="fa-solid fa-headset text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg sm:text-xl text-slate-900 block leading-tight">IT Self-Service Hub</span>
+                        <span class="text-xs text-slate-500 hidden sm:block">ส่วนเทคโนโลยีสารสนเทศ สำนักงานทางหลวงที่ 16 (นครศรีธรรมราช)</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <button onclick="openWizardModal()" class="flex items-center space-x-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-sm transition border border-indigo-200">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span class="hidden md:inline">ช่วยวิเคราะห์อาการทีละขั้น</span>
+                        <span class="md:hidden">วิเคราะห์อาการ</span>
+                    </button>
+                    <a href="https://forms.gle/fff7x8SoXVQhGJ1x8" target="_blank" rel="noopener noreferrer" onclick="showToast('กำลังเปิดแบบฟอร์มแจ้งปัญหาฝ่าย IT ในแท็บใหม่...')" class="flex items-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white font-medium px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl text-sm shadow-sm transition">
+                        <i class="fa-solid fa-ticket"></i>
+                        <span>แจ้งปัญหาให้ฝ่าย IT</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section & Live Search -->
+    <header class="bg-gradient-to-br from-brand-800 via-brand-700 to-indigo-800 text-white py-10 sm:py-14 px-4 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-brand-400 opacity-10 rounded-full translate-x-1/3 translate-y-1/3"></div>
+
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 px-3.5 py-1 rounded-full text-xs sm:text-sm text-brand-100 mb-4">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>ระบบพร้อมให้บริการ 24 ชม. • แก้ไขได้เองใน 3 นาที</span>
+            </div>
+            <h1 class="text-2xl sm:text-4xl font-bold mb-3 tracking-tight">วันนี้พบปัญหาไอทีเรื่องอะไรครับ?</h1>
+            <p class="text-brand-100 text-sm sm:text-base mb-7 max-w-2xl mx-auto font-light">
+                พิมพ์อาการที่พบ ชื่อโปรแกรม หรืออุปกรณ์ที่ใช้งาน เพื่อค้นหาวิธีแก้ไขปัญหาเบื้องต้นแบบทีละขั้นตอน
+            </p>
+
+            <!-- Large Search Bar -->
+            <div class="relative max-w-2xl mx-auto">
+                <div class="absolute inset-y-0 left-0 pl-4 sm:pl-5 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 text-lg"></i>
+                </div>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    oninput="handleSearch(this.value)"
+                    placeholder="เช่น เน็ตหลุด, ปริ้นไม่ออก, สารบรรณ, ฟอนต์เพี้ยน, สแกนไม่เข้า, จอมืด..." 
+                    class="w-full pl-12 sm:pl-14 pr-12 py-4 sm:py-4.5 rounded-2xl text-slate-800 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-brand-400/50 text-base sm:text-lg placeholder-slate-400 transition"
+                >
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-circle-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Quick Tags -->
+            <div class="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm">
+                <span class="text-brand-200 mr-1"><i class="fa-solid fa-fire text-amber-300 mr-1"></i>ค้นหายอดฮิต:</span>
+                <button onclick="quickSearch('Wi-Fi')" class="bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white px-3 py-1.5 rounded-full transition border border-white/10">Wi-Fi / สาย LAN</button>
+                <button onclick="quickSearch('สารบรรณ')" class="bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white px-3 py-1.5 rounded-full transition border border-white/10">ระบบสารบรรณ / e-Office</button>
+                <button onclick="quickSearch('พิมพ์')" class="bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white px-3 py-1.5 rounded-full transition border border-white/10">เครื่องพิมพ์ / สแกน</button>
+                <button onclick="quickSearch('ฟอนต์')" class="bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white px-3 py-1.5 rounded-full transition border border-white/10">ฟอนต์ราชการเพี้ยน</button>
+                <button onclick="quickSearch('ประชุม')" class="bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white px-3 py-1.5 rounded-full transition border border-white/10">ประชุมออนไลน์</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        
+        <!-- Interactive Troubleshooter Banner -->
+        <div class="bg-gradient-to-r from-indigo-50 via-blue-50 to-sky-50 border border-blue-200/80 rounded-2xl p-4 sm:p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+            <div class="flex items-center space-x-4 text-center sm:text-left">
+                <div class="bg-white p-3 rounded-xl shadow-sm text-indigo-600 hidden sm:block">
+                    <i class="fa-solid fa-stethoscope text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="font-semibold text-slate-800 text-base sm:text-lg">ไม่แน่ใจว่าจะค้นหาคำว่าอะไรใช่ไหม?</h2>
+                    <p class="text-slate-600 text-xs sm:text-sm">ลองใช้ระบบตัวช่วยวิเคราะห์อาการ ตอบคำถามสั้นๆ 2-3 ข้อ เพื่อหาวิธีแก้ที่ตรงจุดทันที</p>
+                </div>
+            </div>
+            <button onclick="openWizardModal()" class="w-full sm:w-auto whitespace-nowrap bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm shadow-sm transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>เริ่มวิเคราะห์อาการ</span>
+            </button>
+        </div>
+
+        <!-- Category Section -->
+        <section class="mb-10">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center">
+                    <i class="fa-solid fa-layer-group text-brand-600 mr-2.5"></i>
+                    เลือกตามหมวดหมู่ปัญหา
+                </h2>
+                <button id="showAllCategoriesBtn" onclick="selectCategory('all')" class="hidden text-sm text-brand-600 hover:text-brand-800 font-medium flex items-center space-x-1 bg-brand-50 px-3 py-1.5 rounded-lg transition">
+                    <i class="fa-solid fa-rotate-left text-xs"></i>
+                    <span>แสดงทั้งหมด</span>
+                </button>
+            </div>
+
+            <!-- 6 Category Cards Grid -->
+            <div id="categoryGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4"></div>
+        </section>
+
+        <!-- Troubleshooting Guides List Section -->
+        <section>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-2">
+                <div>
+                    <h2 id="guidesSectionTitle" class="text-lg sm:text-xl font-bold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-book-medical text-brand-600 mr-2.5"></i>
+                        คู่มือแก้ไขปัญหาทั้งหมด
+                    </h2>
+                    <p id="guidesCountText" class="text-xs sm:text-sm text-slate-500 mt-0.5">กำลังแสดง 14 คู่มือที่พร้อมใช้งาน</p>
+                </div>
+
+                <!-- Difficulty Filter -->
+                <div class="flex items-center space-x-2 self-start sm:self-auto">
+                    <span class="text-xs text-slate-500">ระดับ:</span>
+                    <select id="difficultyFilter" onchange="applyFilters()" class="bg-white border border-slate-200 text-slate-700 text-xs sm:text-sm rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="all">ทุกระดับความยาก</option>
+                        <option value="ง่าย">ง่าย (ทำได้ทันที)</option>
+                        <option value="ปานกลาง">ปานกลาง (ตั้งค่าเพิ่มเติม)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Guides Grid -->
+            <div id="guidesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+            <!-- Empty State when no search results found -->
+            <div id="emptyState" class="hidden bg-white rounded-2xl border border-slate-200 p-10 text-center my-6 shadow-sm">
+                <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fa-solid fa-magnifying-glass-minus"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-1">ไม่พบคู่มือที่ตรงกับคำค้นหา</h3>
+                <p class="text-slate-500 text-sm mb-5 max-w-md mx-auto">ลองใช้คำค้นหาอื่นที่สั้นลง หรือให้ระบบช่วยวิเคราะห์อาการเบื้องต้น หรือแจ้งเรื่องให้เจ้าหน้าที่ IT ช่วยเหลือได้เลยครับ</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="resetFilters()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-sm transition">
+                        ล้างการค้นหา
+                    </button>
+                    <a href="https://forms.gle/fff7x8SoXVQhGJ1x8" target="_blank" rel="noopener noreferrer" onclick="showToast('กำลังเปิดแบบฟอร์มแจ้งปัญหาฝ่าย IT ในแท็บใหม่...')" class="bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 py-2 rounded-xl text-sm transition inline-flex items-center">
+                        <i class="fa-solid fa-paper-plane mr-1.5"></i>แจ้งปัญหาผ่านแบบฟอร์ม IT
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-8 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+            <div class="flex items-center space-x-2 text-center md:text-left">
+                <i class="fa-solid fa-shield-halved text-brand-600 shrink-0"></i>
+                <span>จัดทำโดย ส่วนเทคโนโลยีสารสนเทศ สำนักงานทางหลวงที่ 16 (นครศรีธรรมราช) กรมทางหลวง กระทรวงคมนาคม</span>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-4">
+                <span class="flex items-center"><i class="fa-solid fa-phone text-brand-600 mr-1.5"></i>โทรภายใน: <strong class="text-slate-700 ml-1">075-356030</strong></span>
+                <span class="flex items-center">เจ้าหน้าที่พร้อมให้บริการในเวลางาน</span>
+                <button onclick="openAdminModal()" class="text-xs text-slate-400 hover:text-brand-600 underline flex items-center transition">
+                    <i class="fa-solid fa-plus-circle mr-1"></i>เพิ่มคู่มือใหม่ (สำหรับ IT)
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: อ่านรายละเอียดคู่มือ (Guide Reader) -->
+    <div id="guideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden my-auto fade-in flex flex-col max-h-[90vh]">
+            <div class="bg-slate-50 border-b border-slate-200 px-5 sm:px-6 py-4 flex items-start justify-between gap-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                        <span id="modalCategoryBadge" class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-700">หมวดหมู่</span>
+                        <span id="modalMetaBadge" class="text-xs text-slate-500 flex items-center"><i class="fa-regular fa-clock mr-1"></i> ง่าย • 2 นาที</span>
+                    </div>
+                    <h3 id="modalTitle" class="text-lg sm:text-xl font-bold text-slate-900 leading-snug">หัวข้อคู่มือ</h3>
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                    <button id="modalEditBtn" onclick="editCurrentGuide()" title="แก้ไขคู่มือนี้" class="text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl px-3 py-2 text-xs font-medium transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span class="hidden sm:inline">แก้ไขคู่มือ</span>
+                    </button>
+                    <button onclick="closeModal('guideModal')" class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-100 rounded-xl p-2 transition">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-5 sm:p-6 overflow-y-auto guide-content space-y-5">
+                <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 text-sm text-slate-600">
+                    <strong class="text-slate-800 block mb-0.5"><i class="fa-solid fa-circle-info text-brand-600 mr-1.5"></i>อาการที่พบ:</strong>
+                    <span id="modalSymptom">รายละเอียดอาการ...</span>
+                </div>
+
+                <div id="modalWarningBox" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3.5 rounded-r-xl text-sm text-amber-900">
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 mr-2.5"></i>
+                        <div>
+                            <strong class="font-semibold block">ข้อควรระวัง:</strong>
+                            <span id="modalWarningText">ข้อความเตือน</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-bold text-slate-800 font-sans text-base">ขั้นตอนการแก้ไข (ติ๊กถูกเมื่อทำสำเร็จ)</h4>
+                        <span id="stepProgressText" class="text-xs font-medium text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">0/0 ขั้นตอน</span>
+                    </div>
+                    <div id="modalStepsContainer" class="space-y-3"></div>
+                </div>
+
+                <div id="modalNoteBox" class="hidden bg-sky-50 border border-sky-200 rounded-xl p-3.5 text-sm text-sky-900">
+                    <div class="flex items-start">
+                        <i class="fa-solid fa-circle-check text-sky-600 mt-0.5 mr-2.5"></i>
+                        <div>
+                            <strong class="font-semibold block font-sans">คำแนะนำเพิ่มเติม / หมายเหตุ:</strong>
+                            <span id="modalNoteText">หมายเหตุเพิ่มเติม...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-200 pt-5 mt-6">
+                    <div id="feedbackPrompt" class="bg-blue-50/70 rounded-2xl p-4 sm:p-5 text-center border border-blue-100">
+                        <p class="font-sans font-semibold text-slate-800 mb-3">วิธีนี้ช่วยแก้ปัญหาของคุณได้หรือไม่?</p>
+                        <div class="flex flex-col sm:flex-row justify-center gap-3 font-sans">
+                            <button onclick="handleGuideSuccess()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm shadow-sm transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span>แก้ได้แล้ว ขอบคุณ!</span>
+                            </button>
+                            <a href="https://forms.gle/fff7x8SoXVQhGJ1x8" target="_blank" rel="noopener noreferrer" onclick="handleGuideFailed()" class="bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 font-medium px-5 py-2.5 rounded-xl text-sm transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-headset"></i>
+                                <span>ยังแก้ไม่ได้ แจ้งซ่อมผ่าน Google Form</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div id="feedbackSuccessMsg" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center font-sans fade-in">
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2 text-lg">
+                            <i class="fa-solid fa-thumbs-up"></i>
+                        </div>
+                        <h5 class="font-bold text-emerald-900">ยอดเยี่ยมเลยครับ!</h5>
+                        <p class="text-xs sm:text-sm text-emerald-700 mt-0.5">ยินดีด้วยที่คุณสามารถแก้ไขปัญหาได้ด้วยตนเอง หากพบปัญหาอื่นสามารถค้นหาได้ตลอดเวลาครับ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ตัวช่วยวินิจฉัยปัญหา (Troubleshooter Wizard) -->
+    <div id="wizardModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden my-auto fade-in">
+            <div class="bg-gradient-to-r from-indigo-600 to-brand-600 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                    <h3 class="font-bold text-lg">ตัวช่วยวิเคราะห์อาการทีละขั้น</h3>
+                </div>
+                <button onclick="closeModal('wizardModal')" class="text-white/80 hover:text-white rounded-lg p-1.5 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-6">
+                <div id="wizardContent"></div>
+                <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center">
+                    <button id="wizardBackBtn" onclick="wizardGoBack()" class="hidden text-sm text-slate-500 hover:text-slate-800 flex items-center space-x-1 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>ย้อนกลับ</span>
+                    </button>
+                    <button onclick="resetWizard()" class="text-xs text-slate-400 hover:text-indigo-600 ml-auto">
+                        เริ่มวิเคราะห์ใหม่
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: เพิ่มคู่มือใหม่สำหรับแอดมิน (Admin Quick Add) -->
+    <div id="adminModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden my-auto fade-in">
+            <div class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-screwdriver-wrench text-amber-400"></i>
+                    <div>
+                        <h3 class="font-bold text-base sm:text-lg">เพิ่มคู่มือแก้ไขปัญหาใหม่ (IT Admin)</h3>
+                        <p class="text-xs text-slate-300">บันทึกข้อมูลคู่มือลงในเบราว์เซอร์ทันที</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('adminModal')" class="text-slate-400 hover:text-white rounded-lg p-1.5 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="adminForm" onsubmit="saveNewGuide(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อหัวข้อคู่มือ <span class="text-rose-500">*</span></label>
+                    <input type="text" id="aTitle" required placeholder="เช่น วิธีตั้งค่าลายเซ็น (Signature) ใน Outlook" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">หมวดหมู่ <span class="text-rose-500">*</span></label>
+                        <select id="aCategory" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white">
+                            <option value="network">อินเทอร์เน็ต & Wi-Fi / ระบบเครือข่ายภายใน</option>
+                            <option value="printer">เครื่องพิมพ์ & สแกนเนอร์</option>
+                            <option value="account">บัญชีผู้ใช้ & รหัสผ่าน / ความปลอดภัย</option>
+                            <option value="pc">คอมพิวเตอร์ & หน้าจอ</option>
+                            <option value="software">โปรแกรมสำนักงาน & ประชุมออนไลน์</option>
+                            <option value="hardware">อุปกรณ์ต่อพ่วง & การแชร์ไฟล์</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ระดับความยาก</label>
+                        <select id="aDifficulty" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white">
+                            <option value="ง่าย">ง่าย</option>
+                            <option value="ปานกลาง">ปานกลาง</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">เวลาโดยประมาณ</label>
+                        <input type="text" id="aTime" value="3 นาที" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">อาการที่พบ (คำอธิบายสั้นๆ) <span class="text-rose-500">*</span></label>
+                    <input type="text" id="aSymptom" required placeholder="เช่น ต้องการเพิ่มชื่อ ตำแหน่ง และเบอร์โทรท้ายอีเมลอัตโนมัติ" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">คีย์เวิร์ดสำหรับค้นหา (คั่นด้วยลูกน้ำ ,)</label>
+                    <input type="text" id="aKeywords" placeholder="เช่น อีเมล, ลายเซ็น, outlook, signature" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ขั้นตอนการแก้ไข (พิมพ์ทีละบรรทัด 1 บรรทัด = 1 ขั้นตอน) <span class="text-rose-500">*</span></label>
+                    <textarea id="aSteps" rows="4" required placeholder="เปิดโปรแกรม Outlook แล้วคลิกที่เมนู File มุมซ้ายบน&#10;เลือก Options > เลือกแท็บ Mail > กดปุ่ม Signatures...&#10;กด New ตั้งชื่อแล้วพิมพ์ข้อความลายเซ็น กด OK เพื่อบันทึก" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ข้อควรระวัง (ถ้ามี)</label>
+                    <input type="text" id="aWarning" placeholder="เช่น ควรใช้ฟอนต์มาตรฐานเพื่อไม่ให้เพี้ยนเมื่อเปิดบนมือถือ" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm">
+                </div>
+
+                <div class="flex justify-between items-center pt-3 border-t border-slate-200">
+                    <button type="button" onclick="resetCustomGuides()" class="text-xs text-rose-500 hover:underline">รีเซ็ตข้อมูลคู่มือกลับเป็นค่าเริ่มต้น</button>
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="closeModal('adminModal')" class="px-4 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-100">ยกเลิก</button>
+                        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-sm">
+                            <i class="fa-solid fa-save mr-1"></i>บันทึกคู่มือ
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: แก้ไขคู่มือที่มีอยู่ (Edit Guide Modal) -->
+    <div id="editGuideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden my-auto fade-in flex flex-col max-h-[90vh]">
+            <div class="bg-amber-700 text-white px-6 py-4 flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-pen-to-square text-amber-200 text-lg"></i>
+                    <div>
+                        <h3 class="font-bold text-base sm:text-lg">แก้ไขคู่มือแก้ไขปัญหา</h3>
+                        <p class="text-xs text-amber-100">ปรับปรุงข้อมูลและบันทึกลงระบบทันที</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('editGuideModal')" class="text-amber-100 hover:text-white rounded-lg p-1.5 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="editGuideForm" onsubmit="saveEditedGuide(event)" class="p-6 space-y-4 overflow-y-auto">
+                <input type="hidden" id="eGuideId">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อเรื่อง / ชื่อหัวข้อคู่มือ <span class="text-rose-500">*</span></label>
+                    <input type="text" id="eTitle" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">หมวดหมู่ <span class="text-rose-500">*</span></label>
+                        <select id="eCategory" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="network">อินเทอร์เน็ต & เครือข่ายภายใน</option>
+                            <option value="printer">เครื่องพิมพ์ & สแกนเนอร์</option>
+                            <option value="account">บัญชีผู้ใช้ & ความปลอดภัย</option>
+                            <option value="pc">คอมพิวเตอร์ & หน้าจอ</option>
+                            <option value="software">โปรแกรมสำนักงาน & ประชุมออนไลน์</option>
+                            <option value="hardware">อุปกรณ์ต่อพ่วง & การแชร์ไฟล์</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ระดับความยาก</label>
+                        <select id="eDifficulty" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="ง่าย">ง่าย</option>
+                            <option value="ปานกลาง">ปานกลาง</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ระยะเวลาโดยประมาณ</label>
+                        <input type="text" id="eTime" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">คำอธิบายสั้น / อาการที่พบ <span class="text-rose-500">*</span></label>
+                    <input type="text" id="eSymptom" required class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">คำค้นหายอดฮิต / แท็ก (คั่นด้วยลูกน้ำ ,)</label>
+                    <input type="text" id="eKeywords" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ข้อควรระวัง (ถ้ามี)</label>
+                    <input type="text" id="eWarning" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <label class="block text-xs font-bold text-slate-800">ขั้นตอนการแก้ไข <span class="text-rose-500">*</span></label>
+                        <button type="button" onclick="addEditStepRow()" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-900 font-medium px-3 py-1 rounded-lg transition flex items-center space-x-1">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>เพิ่มขั้นตอน</span>
+                        </button>
+                    </div>
+                    <div id="editStepsList" class="space-y-2.5"></div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">คำแนะนำเพิ่มเติม / หมายเหตุท้ายคู่มือ (ถ้ามี)</label>
+                    <textarea id="eNote" rows="2" placeholder="เช่น หากทำตามแล้วยังไม่สำเร็จให้ตรวจสอบสายสัญญาณหรือแจ้งส่วนเทคโนโลยีสารสนเทศ" class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                </div>
+
+                <div class="flex flex-wrap justify-between items-center gap-2 pt-3 border-t border-slate-200">
+                    <button type="button" onclick="resetAllGuidesToDefault()" class="text-xs text-rose-600 hover:text-rose-800 hover:underline flex items-center space-x-1">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>รีเซ็ตกลับเป็นค่าเริ่มต้นของระบบ (14 หัวข้อ)</span>
+                    </button>
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="closeModal('editGuideModal')" class="px-4 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-100">ยกเลิก</button>
+                        <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-sm flex items-center space-x-1.5">
+                            <i class="fa-solid fa-check"></i>
+                            <span>บันทึกการแก้ไข</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-sm flex items-center space-x-2.5 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMessage">บันทึกข้อมูลเรียบร้อย</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const categories = [
+            { id: 'network', name: 'อินเทอร์เน็ต & ระบบเครือข่ายภายใน', icon: 'fa-wifi', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
+            { id: 'printer', name: 'เครื่องพิมพ์ & สแกนเนอร์', icon: 'fa-print', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+            { id: 'account', name: 'บัญชีผู้ใช้ & รหัสผ่าน', icon: 'fa-user-lock', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200' },
+            { id: 'pc', name: 'คอมพิวเตอร์ & หน้าจอ', icon: 'fa-desktop', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-200' },
+            { id: 'software', name: 'โปรแกรมสำนักงาน & ประชุมออนไลน์', icon: 'fa-file-word', color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-200' },
+            { id: 'hardware', name: 'อุปกรณ์ต่อพ่วง & การแชร์ไฟล์', icon: 'fa-keyboard', color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200' }
+        ];
+
+        const defaultGuides = [
+            {
+                id: 'g1',
+                category: 'network',
+                title: 'เชื่อมต่อ Wi-Fi หน่วยงานได้ แต่เข้าเว็บไซต์หรือระบบงานไม่ได้ (No Internet)',
+                difficulty: 'ง่าย',
+                time: '3 นาที',
+                symptom: 'เชื่อมต่อสัญญาณ Wi-Fi ของหน่วยงานได้แล้ว แต่เปิดหน้าเว็บไม่ขึ้น ขึ้น No Internet หรือหน้าเว็บยืนยันตัวตน (Login Wi-Fi) ไม่เด้งขึ้นมา',
+                keywords: ['wifi', 'ไวไฟ', 'no internet', 'เข้าเว็บไม่ได้', 'login wifi', 'proxy', 'dns', 'เน็ตหลุด'],
+                warning: 'หากต้องล็อกอินเข้าใช้งาน Wi-Fi หน่วยงาน แนะนำให้เปิดเบราว์เซอร์แล้วพิมพ์ URL ทั่วไปที่ไม่ใช่ HTTPS (เช่น http://neverssl.com หรือ http://1.1.1.1) เพื่อกระตุ้นหน้าต่างล็อกอิน',
+                steps: [
+                    'คลิกที่ไอคอนรูป <strong>Wi-Fi</strong> มุมขวาล่างของหน้าจอ คลิกขวาที่ชื่อ Wi-Fi หน่วยงาน แล้วกด <strong>Forget (ลืมเครือข่ายนี้)</strong>',
+                    'กดปิดปุ่ม Wi-Fi ทิ้งไว้ประมาณ <strong>10 วินาที</strong> แล้วกดเปิดใหม่ จากนั้นเลือกเชื่อมต่อ Wi-Fi หน่วยงานอีกครั้ง',
+                    'หากเป็น Wi-Fi ที่ต้องยืนยันตัวตน (Captive Portal) แต่หน้าจอล็อกอินไม่เด้ง ให้เปิด Chrome/Edge แล้วพิมพ์ <strong>http://neverssl.com</strong> เพื่อบังคับเปิดหน้าล็อกอิน',
+                    'ตรวจสอบการตั้งค่า Proxy โดยพิมพ์คำว่า <strong>Proxy settings</strong> ในช่องค้นหา Windows (ปุ่ม Start) แล้วตรวจสอบว่าหัวข้อ <em>Use a proxy server</em> ปิดอยู่ (Off) ยกเว้นกรณีที่ฝ่าย IT กำหนดไว้',
+                    'หากยังเข้าไม่ได้ ให้เปิดโหมดเครื่องบิน (Airplane Mode) 5 วินาที แล้วปิด เพื่อรีเซ็ตตัวรับสัญญาณ'
+                ]
+            },
+            {
+                id: 'g2',
+                category: 'network',
+                title: 'สาย LAN ขึ้นกากบาทสีแดง หรือขึ้นรูปโลกไม่มีอินเทอร์เน็ต',
+                difficulty: 'ง่าย',
+                time: '3 นาที',
+                symptom: 'คอมพิวเตอร์ตั้งโต๊ะ (PC) ที่เสียบสาย LAN มุมขวาล่างขึ้นรูปกากบาทสีแดง หรือขึ้นรูปโลก (No Internet Access) ใช้งานเครือข่ายไม่ได้',
+                keywords: ['lan', 'สายแลน', 'กากบาทสีแดง', 'รูปโลก', 'ไม่มีอินเทอร์เน็ต', 'ip', 'switch', 'router'],
+                warning: 'ห้ามดึงสาย LAN สลับช่องมั่วบนกล่องกระจายสัญญาณ (Switch) เพราะอาจทำให้เกิดวงจรวน (Network Loop) และเน็ตล่มทั้งชั้นได้',
+                steps: [
+                    'ก้มตรวจสอบหัวสาย LAN ด้านหลังเคสคอมพิวเตอร์ และจุดต่อกับเต้ารับบนผนัง/ใต้โต๊ะ กดดันหัวสายให้แน่นจนได้ยินเสียงคลิก และสังเกตว่ามี <strong>ไฟสีเขียว/ส้มกระพริบ</strong> ที่ช่องเสียบหรือไม่',
+                    'ตรวจสอบกล่องกระจายสัญญาณ (Switch/Hub ย่อย) ประจำห้องทำงานว่าปลั๊กไฟไม่หลุดและมีไฟสถานะติดปกติ (หากค้างสามารถถอดปลั๊กไฟกล่อง Switch ย่อยออก 10 วินาทีแล้วเสียบใหม่)',
+                    'คลิกขวาที่ไอคอนรูปเครือข่าย/รูปโลก มุมขวาล่าง เลือก <strong>Troubleshoot problems (วินิจฉัยปัญหา)</strong> เพื่อให้ Windows รีเซ็ตการ์ดแลนและขอรับหมายเลข IP ใหม่',
+                    'หากเพื่อนร่วมงานในห้องเดียวกันใช้งานไม่ได้ทั้งหมด แสดงว่าเครือข่ายหลักอาจขัดข้อง ให้โทรแจ้งฝ่าย IT ที่เบอร์ <strong>075-356030</strong> ทันที'
+                ]
+            },
+            {
+                id: 'g3',
+                category: 'network',
+                title: 'เข้าเว็บไซต์ระบบสารบรรณอิเล็กทรอนิกส์ (e-Office) หรือระบบงานกรมทางหลวงไม่ได้',
+                difficulty: 'ปานกลาง',
+                time: '3 นาที',
+                symptom: 'เข้าเว็บไซต์ทั่วไปได้ แต่เปิดระบบสารบรรณอิเล็กทรอนิกส์ (e-Office) หรือระบบงานภายในกรมทางหลวงไม่ได้ หรือหน้าเว็บขึ้นเตือน Your connection is not private',
+                keywords: ['สารบรรณ', 'e-office', 'กรมทางหลวง', 'เข้าไม่ได้', 'not private', 'cache', 'เวลาเพี้ยน', 'ระบบงาน'],
+                warning: 'ระบบงานภาครัฐบางระบบรองรับเฉพาะเบราว์เซอร์ Google Chrome หรือ Microsoft Edge เวอร์ชันล่าสุดเท่านั้น',
+                steps: [
+                    'ตรวจสอบ <strong>วันที่และเวลา (Date & Time)</strong> ที่มุมขวาล่างของหน้าจอคอมพิวเตอร์ให้ตรงกับเวลาปัจจุบัน (หากปี พ.ศ./ค.ศ. หรือเวลาคลาดเคลื่อน หน้าเว็บจะขึ้นเตือนความปลอดภัยและเข้าไม่ได้)',
+                    'หากขึ้นหน้าเตือน <em>Your connection is not private</em> ให้คลิกที่ปุ่ม <strong>Advanced (ขั้นสูง)</strong> ด้านล่าง แล้วคลิก <strong>Proceed to ... (unsafe)</strong> เพื่อเข้าสู่ระบบ',
+                    'ล้างข้อมูลแคชของเบราว์เซอร์ที่ค้างอยู่ โดยกดปุ่ม <strong>Ctrl + Shift + Delete</strong> เลือกช่วงเวลาเป็น <em>All time</em> ติ๊กเฉพาะ <em>Cached images and files</em> แล้วกด Clear data',
+                    'ทดลองเปิดหน้าต่างไม่ระบุตัวตน (กด <strong>Ctrl + Shift + N</strong> ใน Chrome) แล้วลองเข้าลิงก์ระบบสารบรรณใหม่อีกครั้ง',
+                    'ตรวจสอบว่าลิงก์ (URL) ที่เข้าใช้งานเป็นลิงก์ปัจจุบันของหน่วยงาน ไม่ใช่ลิงก์เก่าที่บันทึกไว้ใน Bookmark'
+                ]
+            },
+            {
+                id: 'g4',
+                category: 'printer',
+                title: 'สั่งพิมพ์แล้วไม่ออก เอกสารค้างในคิวพิมพ์ (Print Spooler)',
+                difficulty: 'ง่าย',
+                time: '3 นาที',
+                symptom: 'กดสั่ง Print เอกสารแล้วเครื่องพิมพ์เงียบสนิท หรือมีรายการเอกสารเก่าค้างอยู่ในคิวพิมพ์ (Print Queue) กดลบไม่ออก',
+                keywords: ['พิมพ์ไม่ออก', 'ปริ้นไม่ออก', 'คิวพิมพ์', 'print spooler', 'คิวค้าง', 'default printer', 'เครื่องพิมพ์'],
+                warning: 'ตรวจสอบในหน้าต่างสั่งพิมพ์ก่อนว่าไม่ได้เผลอเลือกเป็น "Microsoft Print to PDF" หรือชื่อเครื่องพิมพ์ของห้องอื่น',
+                steps: [
+                    'ตรวจสอบว่าตั้งค่าเครื่องพิมพ์ที่ต้องการใช้งานเป็นเครื่องหลัก (Default Printer) โดยมีเครื่องหมายถูกสีเขียวกำกับอยู่',
+                    'ดับเบิลคลิกที่ไอคอนรูป <strong>เครื่องพิมพ์เล็กๆ</strong> บริเวณมุมขวาล่าง (Taskbar) คลิกเมนู <strong>Printer > Cancel All Documents</strong> เพื่อลบคิวงานที่ค้าง',
+                    'หากลบคิวงานไม่ออก ให้กดปุ่ม <strong>Windows</strong> พิมพ์คำว่า <strong>Services</strong> แล้วกด Enter',
+                    'เลื่อนหารายการชื่อ <strong>Print Spooler</strong> คลิกขวาแล้วเลือกคำสั่ง <strong>Restart</strong> เพื่อล้างหน่วยความจำคิวพิมพ์ทั้งหมด',
+                    'กลับไปที่ไฟล์เอกสาร แล้วทดลองกดสั่งพิมพ์ใหม่อีกครั้ง'
+                ]
+            },
+            {
+                id: 'g5',
+                category: 'printer',
+                title: 'เครื่องพิมพ์ขึ้นสถานะ Offline หรือไฟกระพริบแจ้งเตือน',
+                difficulty: 'ง่าย',
+                time: '3 นาที',
+                symptom: 'สถานะเครื่องพิมพ์ในคอมพิวเตอร์ขึ้นคำว่า Offline ใช้งานไม่ได้ หรือที่ตัวเครื่องพิมพ์มีไฟสีส้ม/สีแดงกระพริบเตือน',
+                keywords: ['offline', 'ออฟไลน์', 'ไฟกระพริบ', 'กระดาษติด', 'paper jam', 'หมึกหมด', 'เครื่องพิมพ์'],
+                warning: 'หากกระดาษติดด้านใน ห้ามดึงกระดาษย้อนศรแรงๆ ให้ค่อยๆ ดึงออกตามทิศทางที่กระดาษวิ่ง เพื่อป้องกันชุดลูกกลิ้งเสียหาย',
+                steps: [
+                    'เดินไปดูที่ตัวเครื่องพิมพ์ ตรวจสอบว่าเปิดสวิตช์ไฟแล้ว มีกระดาษในถาดเพียงพอ และไม่มีข้อความแจ้งเตือน <strong>Paper Jam (กระดาษติด)</strong> หรือ <strong>Toner/Ink Low (หมึกหมด)</strong>',
+                    'เปิดฝาครอบเครื่องพิมพ์ตรวจดูเศษกระดาษชิ้นเล็กๆ ที่อาจติดค้างอยู่ แล้วปิดฝาครอบให้สนิทจนไฟแจ้งเตือนดับลง',
+                    'หากเป็นเครื่องพิมพ์แบบสาย USB ให้ตรวจดูสาย USB ด้านหลังเครื่องพิมพ์และคอมพิวเตอร์ไม่ให้หลวม แล้วลอง <strong>ปิดสวิตช์เครื่องพิมพ์ 15 วินาที แล้วเปิดใหม่</strong>',
+                    'หากเป็นเครื่องพิมพ์เครือข่าย (Network Printer / เครื่องถ่ายเอกสารส่วนกลาง) ให้ลองกดถ่ายเอกสารที่หน้าเครื่องดูว่าเครื่องพร้อมทำงานหรือไม่ หากไม่พร้อมให้รีสตาร์ทเครื่องพิมพ์'
+                ]
+            },
+            {
+                id: 'g6',
+                category: 'printer',
+                title: 'สแกนเอกสารจากเครื่องถ่ายเอกสาร/สแกนเนอร์แล้วไฟล์ไม่เข้าคอมพิวเตอร์',
+                difficulty: 'ปานกลาง',
+                time: '4 นาที',
+                symptom: 'กดสแกนเอกสารที่เครื่องถ่ายเอกสารมัลติฟังก์ชัน (Scan to Folder) แล้ว แต่เปิดดูในโฟลเดอร์ Scan บนคอมพิวเตอร์ไม่พบไฟล์',
+                keywords: ['สแกน', 'scan', 'สแกนไม่เข้า', 'โฟลเดอร์ scan', 'เครื่องถ่ายเอกสาร', 'แชร์โฟลเดอร์', 'ip เปลี่ยน'],
+                warning: 'หากมีการเปลี่ยนเครื่องคอมพิวเตอร์ใหม่ หรือลง Windows ใหม่ ชื่อเครื่อง (Computer Name) และสิทธิ์แชร์โฟลเดอร์จะถูกรีเซ็ต ต้องแจ้ง IT ตั้งค่าใหม่',
+                steps: [
+                    'ตรวจสอบหน้าจอเครื่องถ่ายเอกสารว่าหลังสแกนเสร็จ ขึ้นสถานะ <strong>OK / Completed</strong> หรือขึ้น <strong>Error / NG / Connection Failed</strong>',
+                    'ตรวจสอบว่าคอมพิวเตอร์ปลายทางเปิดเครื่องอยู่ (ไม่ได้เข้าโหมด Sleep) และเชื่อมต่อสาย LAN หรือ Wi-Fi หน่วยงานตามปกติ',
+                    'หากเครื่องคอมพิวเตอร์มีการตั้งรหัสผ่านเข้าเครื่องใหม่ หรือเพิ่งเปลี่ยนรหัสผ่าน Windows ให้แจ้งฝ่าย IT เพื่ออัปเดตรหัสผ่านในสมุดรายชื่อของเครื่องถ่ายเอกสาร',
+                    'กรณีสแกนเอกสารจำนวนหลายสิบหน้าพร้อมกันแล้วไฟล์ไม่เข้า ให้ลองแบ่งสแกนเป็นชุดย่อย ชุดละประมาณ 20-30 หน้า เพื่อลดขนาดไฟล์'
+                ]
+            },
+            {
+                id: 'g7',
+                category: 'account',
+                title: 'ลืมรหัสผ่านเข้าเครื่องคอมพิวเตอร์ / รหัสผ่านหมดอายุ หรือเข้าอีเมลองค์กรไม่ได้',
+                difficulty: 'ง่าย',
+                time: '3 นาที',
+                symptom: 'กรอกรหัสผ่านเข้า Windows หรืออีเมลหน่วยงานแล้วขึ้นรหัสผ่านไม่ถูกต้อง บัญชีถูกล็อก หรือระบบแจ้งเตือนให้เปลี่ยนรหัสผ่านใหม่',
+                keywords: ['ลืมรหัสผ่าน', 'password', 'รหัสผ่านหมดอายุ', 'เข้าเครื่องไม่ได้', 'อีเมล', 'account locked', 'เปลี่ยนรหัส'],
+                warning: 'หากพิมพ์รหัสผ่านผิดติดต่อกัน 5 ครั้ง ระบบความปลอดภัยจะล็อกบัญชีชั่วคราว 15-30 นาที ห้ามพยายามเดารหัสซ้ำๆ',
+                steps: [
+                    'สังเกตมุมขวาล่างของหน้าจอ ตรวจสอบว่าแป้นพิมพ์เป็นภาษาอังกฤษ <strong>(ENG)</strong> และไม่ได้เปิดปุ่ม <strong>Caps Lock</strong> ค้างไว้',
+                    'หากหน้าจอขึ้นข้อความ <em>Your password has expired and must be changed</em> ให้ใส่รหัสผ่านเดิมในช่องแรก แล้วตั้งรหัสผ่านใหม่ 2 ช่องถัดมา (ต้องมีตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก และตัวเลข รวมกันอย่างน้อย 8 ตัวอักษร)',
+                    'กรณีลืมรหัสผ่านอีเมลองค์กร สามารถกดปุ่ม <strong>Forgot my password</strong> บนหน้าเว็บเข้าอีเมล เพื่อรับรหัส OTP ยืนยันตัวตนผ่านเบอร์มือถือที่ลงทะเบียนไว้',
+                    'หากลืมรหัสผ่านเข้าเครื่องคอมพิวเตอร์ (Local / Domain Account) ให้โทรแจ้งเจ้าหน้าที่ IT ที่เบอร์ <strong>075-356030</strong> เพื่อดำเนินการรีเซ็ตให้ทันที'
+                ]
+            },
+            {
+                id: 'g8',
+                category: 'account',
+                title: 'ได้รับอีเมลหรือลิงก์น่าสงสัย (Phishing) หรือเผลอกดลิงก์แปลกปลอม',
+                difficulty: 'ง่าย',
+                time: '2 นาที',
+                symptom: 'ได้รับอีเมลหรือข้อความอ้างชื่อหน่วยงาน/ธนาคาร/ผู้บริหาร ให้กดลิงก์กรอกรหัสผ่าน หรือเผลอกดลิงก์/เปิดไฟล์แนบแปลกปลอมไปแล้ว',
+                keywords: ['phishing', 'อีเมลปลอม', 'ลิงก์แปลกปลอม', 'ไวรัส', 'แฮก', 'ความปลอดภัย', 'มัลแวร์', 'กดลิงก์'],
+                warning: 'ห้ามกรอก Username, Password หรือรหัส OTP ลงในเว็บไซต์ที่เปิดมาจากลิงก์ในอีเมลที่น่าสงสัยโดยเด็ดขาด!',
+                steps: [
+                    '<strong>วิธีสังเกตเบื้องต้น:</strong> ตรวจสอบชื่ออีเมลผู้ส่งจริง (ไม่ใช่แค่ชื่อที่แสดง) หากสะกดผิดเพี้ยนหรือมาจากโดเมนแปลกๆ และเร่งรัดให้กดลิงก์ด่วน ให้ลบทิ้งทันที',
+                    '<strong>หากเผลอกดลิงก์ไปแล้ว:</strong> ให้รีบปิดหน้าต่างเบราว์เซอร์นั้นทันที ห้ามกดดาวน์โหลดไฟล์หรืออนุญาตการติดตั้งโปรแกรมใดๆ',
+                    '<strong>ตัดการเชื่อมต่อเครือข่ายชั่วคราว:</strong> ดึงสาย LAN ออก หรือกดปิด Wi-Fi บนเครื่องคอมพิวเตอร์ทันที เพื่อป้องกันมัลแวร์แพร่กระจายไปยังเครื่องอื่นในหน่วยงาน',
+                    'หากเผลอกรอกรหัสผ่านไปแล้ว ให้ใช้เครื่องอื่นรีบเปลี่ยนรหัสผ่านบัญชีนั้นทันที และโทรแจ้งส่วนเทคโนโลยีสารสนเทศ <strong>075-356030</strong> เพื่อเข้าตรวจสอบเครื่อง'
+                ]
+            },
+            {
+                id: 'g9',
+                category: 'pc',
+                title: 'เปิดเครื่องคอมพิวเตอร์แล้วหน้าจอมืด ไม่มีภาพขึ้น',
+                difficulty: 'ง่าย',
+                time: '3 นาที',
+                symptom: 'กดปุ่มเปิดเครื่อง (Power) ที่ตัวเคสแล้วมีไฟติด พัดลมหมุน แต่หน้าจอมอนิเตอร์มืดสนิท หรือขึ้นข้อความ No Signal / Entering Sleep Mode',
+                keywords: ['จอมืด', 'เปิดไม่ติด', 'no signal', 'ไม่มีภาพ', 'สายจอ', 'hdmi', 'vga', 'sleep'],
+                warning: 'ตรวจสอบสวิตช์ไฟที่ปลั๊กพ่วงใต้โต๊ะก่อนทุกครั้ง บางครั้งเท้าอาจไปเตะโดนสวิตช์ปลั๊กพ่วงโดยไม่ตั้งใจ',
+                steps: [
+                    'กดปุ่มเปิด-ปิด (Power) ที่มุมขวาหรือด้านล่างของ <strong>ตัวจอมอนิเตอร์</strong> ตรวจสอบว่ามีไฟสถานะสีเขียวหรือสีฟ้าติดขึ้นหรือไม่',
+                    'ขยับเมาส์หรือกดปุ่ม Enter บนคีย์บอร์ด 2-3 ครั้ง เผื่อหน้าจออยู่ในโหมดพักหน้าจอ (Sleep Mode)',
+                    'ตรวจสอบสายสัญญาณภาพ (สาย <strong>HDMI / VGA / DisplayPort</strong>) ทั้งด้านหลังจอมอนิเตอร์และด้านหลังตัวเครื่องคอมพิวเตอร์ หมุนน็อตหรือดันสายให้แน่นสนิท',
+                    'กดปุ่มเลือกแหล่งสัญญาณ (Input / Source) ที่ตัวจอมอนิเตอร์ ให้ตรงกับชนิดสายที่เสียบอยู่ (เช่น HDMI 1, VGA)',
+                    'หากไฟสถานะที่จอติด แต่หน้าจอยังมืดสนิทและมีเสียงร้องเตือน (Beep) จากตัวเครื่อง ให้แจ้งฝ่าย IT เข้าตรวจสอบอุปกรณ์ภายใน'
+                ]
+            },
+            {
+                id: 'g10',
+                category: 'pc',
+                title: 'คอมพิวเตอร์ทำงานช้า ค้าง หรือโปรแกรมไม่ตอบสนอง (Not Responding)',
+                difficulty: 'ง่าย',
+                time: '3 นาที',
+                symptom: 'เปิดโปรแกรมช้า เมาส์ขยับหน่วง หน้าต่างโปรแกรมขึ้นสีขาวจางพร้อมข้อความ Not Responding หรือเปิดเครื่องทิ้งไว้นานจนอืด',
+                keywords: ['คอมช้า', 'ค้าง', 'not responding', 'อืด', 'task manager', 'ไฟล์ขยะ', 'รีสตาร์ท', 'restart'],
+                warning: 'หากโปรแกรม Word หรือ Excel ค้าง ควรรอประมาณ 1 นาทีก่อนบังคับปิด เพื่อให้ออโต้เซฟ (AutoRecover) ทำงานและลดโอกาสไฟล์งานหาย',
+                steps: [
+                    'กดปุ่มคีย์ลัด <strong>Ctrl + Shift + Esc</strong> พร้อมกัน เพื่อเปิดหน้าต่าง <strong>Task Manager</strong>',
+                    'คลิกเลือกโปรแกรมที่มีสถานะ <strong>Not Responding</strong> แล้วกดปุ่ม <strong>End Task</strong> ที่มุมขวาล่างเพื่อปิดเฉพาะโปรแกรมที่ค้าง',
+                    'ปิดแท็บเบราว์เซอร์ (Chrome / Edge) ที่เปิดค้างไว้จำนวนมาก และเคลียร์ไฟล์ขยะในถังขยะ (Recycle Bin)',
+                    'คลิกปุ่ม Start > Power > เลือก <strong>Restart</strong> (การกด Restart จะช่วยล้างหน่วยความจำชั่วคราว RAM ได้ดีกว่าการกด Shut down แล้วเปิดใหม่)',
+                    'แนะนำให้ทำการ Restart เครื่องคอมพิวเตอร์อย่างน้อยสัปดาห์ละ 2-3 ครั้ง เพื่อรักษาประสิทธิภาพการทำงาน'
+                ]
+            },
+            {
+                id: 'g11',
+                category: 'software',
+                title: 'ไฟล์ Word / Excel / PDF เปิดไม่ได้ หรือฟอนต์เพี้ยน สระลอย',
+                difficulty: 'ง่าย',
+                time: '3 นาที',
+                symptom: 'เปิดเอกสารราชการแล้วตัวหนังสืออ่านไม่ออก ฟอนต์เปลี่ยนเป็น Angsana สระลอยทับกัน หรือเปิดไฟล์ PDF/Office ไม่ได้',
+                keywords: ['ฟอนต์เพี้ยน', 'สระลอย', 'thsarabun', 'word', 'excel', 'pdf', 'เปิดไฟล์ไม่ได้', 'ฟอนต์ราชการ'],
+                warning: 'เอกสารราชการมาตรฐานต้องใช้ฟอนต์ TH SarabunPSK หรือ TH Sarabun New เท่านั้น หากเครื่องไม่มีฟอนต์นี้รูปแบบหน้ากระดาษจะเพี้ยนทั้งหมด',
+                steps: [
+                    '<strong>กรณีฟอนต์เพี้ยน/สระลอย:</strong> ตรวจสอบในโปรแกรม Word ว่ามีฟอนต์ <strong>TH SarabunPSK</strong> และ <strong>TH Sarabun New</strong> หรือไม่ (หากไม่มี สามารถขอไฟล์ติดตั้งฟอนต์มาตรฐานราชการจากฝ่าย IT ได้ทันที)',
+                    '<strong>กรณีไฟล์ขึ้นแถบสีเหลืองด้านบน:</strong> เมื่อดาวน์โหลดไฟล์จากอีเมลหรือระบบสารบรรณ ให้กดปุ่ม <strong>Enable Editing</strong> เพื่อให้โปรแกรมแสดงผลรูปแบบหน้ากระดาษที่ถูกต้อง',
+                    '<strong>กรณีเปิดไฟล์ PDF ไม่ได้:</strong> ให้คลิกขวาที่ไฟล์ PDF เลือก <strong>Open with > Adobe Acrobat Reader</strong> หรือ Google Chrome',
+                    '<strong>กรณีไฟล์ Word/Excel เสียหายเปิดไม่ขึ้น:</strong> เปิดโปรแกรม Word/Excel เปล่าๆ ขึ้นมาก่อน กดเมนู <strong>File > Open > Browse</strong> เลือกไฟล์ที่มีปัญหา แล้วคลิกลูกศรข้างปุ่ม Open เลือกคำสั่ง <strong>Open and Repair</strong>'
+                ]
+            },
+            {
+                id: 'g12',
+                category: 'software',
+                title: 'ประชุมออนไลน์ (Zoom / MS Teams / Webex) แล้วไม่ได้ยินเสียง หรือไมค์/กล้องไม่ทำงาน',
+                difficulty: 'ง่าย',
+                time: '3 นาที',
+                symptom: 'เข้าห้องประชุมออนไลน์แล้วไม่ได้ยินเสียงผู้บรรยาย พูดแล้วคนอื่นไม่ได้ยิน หรือเปิดกล้องวิดีโอไม่ติด',
+                keywords: ['ประชุมออนไลน์', 'zoom', 'teams', 'webex', 'ไม่ได้ยินเสียง', 'ไมค์ไม่ดัง', 'กล้องไม่ติด', 'mute'],
+                warning: 'ตรวจสอบให้แน่ใจว่าไม่ได้เปิดโปรแกรมประชุมออนไลน์ 2 โปรแกรมซ้อนกัน (เช่น เปิดทั้ง Zoom และ Teams พร้อมกัน) เพราะกล้องและไมค์จะถูกแย่งใช้งาน',
+                steps: [
+                    'สังเกตปุ่มไมโครโฟนและกล้องในห้องประชุม ตรวจสอบว่าไม่ได้อยู่ในสถานะปิด <strong>(Mute / Stop Video)</strong> และเช็กปุ่มปิดเสียงที่สายหูฟัง/ตัวโน้ตบุ๊ก',
+                    'คลิกที่ลูกศรชี้ขึ้น <strong>(^)</strong> ข้างไอคอนรูปไมโครโฟนในโปรแกรมประชุม แล้วเลือกเปลี่ยนอุปกรณ์ <strong>Microphone</strong> และ <strong>Speaker</strong> ให้ตรงกับหูฟังหรือลำโพงที่เสียบใช้งานอยู่',
+                    'กดปุ่ม <strong>Test Speaker & Microphone</strong> เพื่อทดสอบเสียงเรียกเข้าและเสียงพูดของตนเองก่อนเริ่มประชุม',
+                    '<strong>กรณีเข้าประชุมผ่านเบราว์เซอร์ (Chrome/Edge):</strong> คลิกที่ไอคอนรูปตั้งค่า/แม่กุญแจ ด้านหน้าช่องพิมพ์เว็บไซต์ (URL) ด้านบน แล้วเปิดสวิตช์อนุญาต (Allow) ทั้ง <strong>Camera</strong> และ <strong>Microphone</strong> จากนั้นกด Refresh หน้าเว็บ'
+                ]
+            },
+            {
+                id: 'g13',
+                category: 'hardware',
+                title: 'คีย์บอร์ดหรือเมาส์ไร้สายไม่ทำงาน / กดพิมพ์ตัวเลขฝั่งขวา (Numpad) ไม่ได้',
+                difficulty: 'ง่าย',
+                time: '2 นาที',
+                symptom: 'เลื่อนเมาส์หรือพิมพ์คีย์บอร์ดไร้สายแล้วไม่ขยับ หรือคีย์บอร์ดพิมพ์ตัวอักษรได้ปกติแต่กดปุ่มตัวเลขฝั่งขวา (Numpad) ไม่ติด',
+                keywords: ['เมาส์', 'คีย์บอร์ด', 'ไร้สาย', 'wireless', 'numpad', 'numlock', 'พิมพ์ตัวเลขไม่ได้', 'ถ่านหมด'],
+                steps: [
+                    '<strong>กรณีกดพิมพ์ตัวเลขฝั่งขวา (Numpad) ไม่ได้:</strong> ให้กดปุ่ม <strong>Num Lock</strong> บริเวณมุมซ้ายบนของแผงตัวเลข 1 ครั้ง (สังเกตไฟสัญลักษณ์เลข 1 บนคีย์บอร์ดต้องติดสว่าง)',
+                    '<strong>กรณีเมาส์/คีย์บอร์ดไร้สายไม่ทำงาน:</strong> พลิกดูด้านใต้ของอุปกรณ์ ตรวจสอบว่าสวิตช์เปิด-ปิดอยู่ที่ตำแหน่ง <strong>ON</strong> และลองเปลี่ยนถ่านก้อนใหม่ (AA / AAA)',
+                    'ดึงตัวรับสัญญาณ USB ขนาดเล็ก (USB Receiver) ออกจากพอร์ตคอมพิวเตอร์ แล้วลองย้ายไปเสียบที่ <strong>พอร์ต USB ช่องอื่น</strong> (แนะนำช่องด้านหลังเคสสำหรับ PC)',
+                    'หากเป็นคีย์บอร์ดแบบมีสาย ให้ลองถอดสาย USB ออกแล้วเสียบใหม่ หรือทดสอบสลับไปเสียบช่อง USB อื่น เพื่อเช็กว่าพอร์ต USB ไม่ได้เสีย'
+                ]
+            },
+            {
+                id: 'g14',
+                category: 'hardware',
+                title: 'เข้าโฟลเดอร์แชร์ส่วนกลาง (Shared Folder / NAS) ในวง LAN ไม่ได้',
+                difficulty: 'ปานกลาง',
+                time: '3 นาที',
+                symptom: 'เปิดโฟลเดอร์แชร์ส่วนกลางของกลุ่ม/ฝ่าย หรือไดรฟ์เครือข่าย (Network Drive) ไม่ได้ ขึ้นหน้าต่างแจ้งเตือน Network Error หรือถามรหัสผ่าน',
+                keywords: ['แชร์ไฟล์', 'shared folder', 'nas', 'network drive', 'วง lan', 'เข้าโฟลเดอร์ไม่ได้', 'path'],
+                warning: 'การเข้าใช้งาน Shared Folder ภายในหน่วยงาน จำเป็นต้องเชื่อมต่อเครือข่ายภายใน (สาย LAN หรือ Wi-Fi หน่วยงาน) เท่านั้น ไม่สามารถเข้าผ่านเน็ตมือถือส่วนตัวได้',
+                steps: [
+                    'ตรวจสอบว่าคอมพิวเตอร์เชื่อมต่อสาย LAN หรือ Wi-Fi ภายในหน่วยงานเรียบร้อยแล้ว (ไม่ได้ต่อ Hotspot จากมือถือ)',
+                    'กดปุ่ม <strong>Windows + R</strong> บนคีย์บอร์ดพร้อมกัน เพื่อเปิดช่องคำสั่ง Run จากนั้นพิมพ์ Path ของเครื่องแม่ข่าย เช่น <strong>\\\\ชื่อเครื่องแม่ข่าย</strong> หรือ <strong>\\\\192.168.x.x</strong> แล้วกด Enter',
+                    'หากระบบเด้งหน้าต่างถาม <strong>Enter network credentials</strong> ให้กรอก Username และ Password ที่ได้รับจากฝ่าย IT (หากมี Domain ให้พิมพ์ชื่อหน่วยงาน\\ชื่อผู้ใช้)',
+                    'ติ๊กถูกที่ช่อง <strong>Remember my credentials</strong> เพื่อบันทึกการจดจำรหัสผ่านในครั้งถัดไป แล้วกด OK'
+                ]
+            }
+        ];
+
+        const wizardData = {
+            start: {
+                question: 'ปัญหาที่คุณพบเกี่ยวข้องกับเรื่องใดมากที่สุดครับ?',
+                subtitle: 'เลือกหัวข้อที่ใกล้เคียงกับอาการที่เกิดขึ้นตอนนี้',
+                options: [
+                    { label: 'อินเทอร์เน็ต / Wi-Fi / สาย LAN / เข้าเว็บสารบรรณไม่ได้', icon: 'fa-wifi', next: 'net_1' },
+                    { label: 'เครื่องพิมพ์ (Printer) / เครื่องถ่ายเอกสาร / สแกนไฟล์', icon: 'fa-print', next: 'print_1' },
+                    { label: 'บัญชีผู้ใช้ / รหัสผ่าน / อีเมลน่าสงสัย (Phishing)', icon: 'fa-user-lock', next: 'acc_1' },
+                    { label: 'คอมพิวเตอร์ค้าง / จอมืด / ฟอนต์เพี้ยน / ประชุมออนไลน์', icon: 'fa-desktop', next: 'pc_soft_1' },
+                    { label: 'เมาส์ คีย์บอร์ด / กดตัวเลขไม่ได้ / โฟลเดอร์แชร์ส่วนกลาง', icon: 'fa-keyboard', next: 'hw_share_1' }
+                ]
+            },
+            net_1: {
+                question: 'อาการเกี่ยวกับอินเทอร์เน็ตและระบบงานเป็นแบบใดครับ?',
+                options: [
+                    { label: 'ต่อ Wi-Fi ได้ แต่เข้าเว็บไม่ได้ / หน้าล็อกอิน Wi-Fi ไม่ขึ้น', icon: 'fa-wifi', resultGuideId: 'g1' },
+                    { label: 'สาย LAN ขึ้นกากบาทสีแดง หรือขึ้นรูปโลกไม่มีอินเทอร์เน็ต', icon: 'fa-network-wired', resultGuideId: 'g2' },
+                    { label: 'เข้าเว็บอื่นได้ แต่เข้าสารบรรณ (e-Office) หรือระบบกรมฯ ไม่ได้', icon: 'fa-globe', resultGuideId: 'g3' }
+                ]
+            },
+            print_1: {
+                question: 'อาการของเครื่องพิมพ์หรือสแกนเนอร์เป็นอย่างไรครับ?',
+                options: [
+                    { label: 'กดสั่งพิมพ์แล้วเงียบ มีคิวงานค้างในระบบ (Print Spooler)', icon: 'fa-print', resultGuideId: 'g4' },
+                    { label: 'เครื่องพิมพ์ขึ้นสถานะ Offline หรือไฟกระพริบเตือนกระดาษ/หมึก', icon: 'fa-triangle-exclamation', resultGuideId: 'g5' },
+                    { label: 'สแกนเอกสารแล้วไฟล์ไม่เข้าคอมพิวเตอร์', icon: 'fa-file-export', resultGuideId: 'g6' }
+                ]
+            },
+            acc_1: {
+                question: 'ปัญหาเกี่ยวกับบัญชีผู้ใช้หรือความปลอดภัยคือข้อใดครับ?',
+                options: [
+                    { label: 'ลืมรหัสผ่านเข้าเครื่อง / รหัสหมดอายุ / เข้าอีเมลองค์กรไม่ได้', icon: 'fa-key', resultGuideId: 'g7' },
+                    { label: 'ได้รับอีเมลแปลกๆ / ลิงก์น่าสงสัย หรือเผลอกดลิงก์ไปแล้ว', icon: 'fa-shield-virus', resultGuideId: 'g8' }
+                ]
+            },
+            pc_soft_1: {
+                question: 'อาการเกี่ยวกับเครื่องคอมพิวเตอร์หรือโปรแกรมคือข้อใดครับ?',
+                options: [
+                    { label: 'เปิดเครื่องแล้วหน้าจอมืดสนิท ไม่มีภาพขึ้น (No Signal)', icon: 'fa-display', resultGuideId: 'g9' },
+                    { label: 'เครื่องช้ามาก ค้าง หรือโปรแกรมขึ้น Not Responding', icon: 'fa-hourglass-half', resultGuideId: 'g10' },
+                    { label: 'เปิดไฟล์ Word/Excel/PDF ไม่ได้ หรือฟอนต์ราชการเพี้ยน สระลอย', icon: 'fa-file-word', resultGuideId: 'g11' },
+                    { label: 'ประชุมออนไลน์ (Zoom/Teams) ไม่ได้ยินเสียง ไมค์/กล้องไม่ติด', icon: 'fa-video', resultGuideId: 'g12' }
+                ]
+            },
+            hw_share_1: {
+                question: 'อาการที่พบคือข้อใดครับ?',
+                options: [
+                    { label: 'เมาส์/คีย์บอร์ดไร้สายไม่ทำงาน หรือกดตัวเลขฝั่งขวาไม่ได้', icon: 'fa-computer-mouse', resultGuideId: 'g13' },
+                    { label: 'เข้าโฟลเดอร์แชร์ส่วนกลาง (Shared Folder / NAS) ไม่ได้', icon: 'fa-folder-open', resultGuideId: 'g14' }
+                ]
+            }
+        };
+
+        const STORAGE_KEY_GUIDES = 'it_hub_doh16_guides_v1';
+
+        let allGuides = [];
+        let selectedCategory = 'all';
+        let searchQuery = '';
+        let currentOpenedGuide = null;
+        let wizardHistory = ['start'];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGuidesFromStorage();
+            renderCategories();
+            applyFilters();
+        });
+
+        function loadGuidesFromStorage() {
+            try {
+                const savedJson = localStorage.getItem(STORAGE_KEY_GUIDES);
+                if (savedJson) {
+                    const parsed = JSON.parse(savedJson);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        allGuides = parsed;
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error('เกิดข้อผิดพลาดในการโหลดข้อมูลคู่มือ:', err);
+            }
+            allGuides = JSON.parse(JSON.stringify(defaultGuides));
+            saveGuidesToStorage();
+        }
+
+        function saveGuidesToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY_GUIDES, JSON.stringify(allGuides));
+            } catch (err) {
+                console.error('เกิดข้อผิดพลาดในการบันทึกข้อมูลคู่มือ:', err);
+                showToast('ไม่สามารถบันทึกลง LocalStorage ได้');
+            }
+        }
+
+        function renderCategories() {
+            const grid = document.getElementById('categoryGrid');
+            if (!grid) return;
+
+            grid.innerHTML = categories.map(cat => {
+                const count = allGuides.filter(g => g.category === cat.id).length;
+                const isSelected = selectedCategory === cat.id;
+                const activeClasses = isSelected
+                    ? `ring-2 ring-brand-600 border-brand-500 ${cat.bg}`
+                    : `bg-white border-slate-200 hover:border-brand-300`;
+
+                return `
+                    <button type="button" onclick="selectCategory('${cat.id}')"
+                        class="${activeClasses} rounded-2xl border p-4 text-left shadow-sm hover:shadow-md transition flex flex-col justify-between group">
+                        <div class="flex items-center justify-between w-full mb-3">
+                            <div class="w-10 h-10 rounded-xl ${cat.bg} ${cat.color} flex items-center justify-center text-lg group-hover:scale-105 transition">
+                                <i class="fa-solid ${cat.icon}"></i>
+                            </div>
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">${count}</span>
+                        </div>
+                        <span class="font-semibold text-xs sm:text-sm text-slate-800 leading-snug">${cat.name}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectCategory(categoryId) {
+            selectedCategory = categoryId;
+            const showAllBtn = document.getElementById('showAllCategoriesBtn');
+            const titleEl = document.getElementById('guidesSectionTitle');
+
+            if (categoryId === 'all') {
+                showAllBtn.classList.add('hidden');
+                titleEl.innerHTML = `<i class="fa-solid fa-book-medical text-brand-600 mr-2.5"></i>คู่มือแก้ไขปัญหาทั้งหมด`;
+            } else {
+                const catObj = categories.find(c => c.id === categoryId);
+                showAllBtn.classList.remove('hidden');
+                titleEl.innerHTML = `<i class="fa-solid ${catObj ? catObj.icon : 'fa-book-medical'} text-brand-600 mr-2.5"></i>${catObj ? catObj.name : 'หมวดหมู่ที่เลือก'}`;
+            }
+
+            renderCategories();
+            applyFilters();
+        }
+
+        function handleSearch(value) {
+            searchQuery = (value || '').trim().toLowerCase();
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (searchQuery.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            applyFilters();
+        }
+
+        function quickSearch(term) {
+            const input = document.getElementById('searchInput');
+            if (input) {
+                input.value = term;
+                input.focus();
+            }
+            handleSearch(term);
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            if (input) {
+                input.value = '';
+            }
+            handleSearch('');
+        }
+
+        function resetFilters() {
+            selectedCategory = 'all';
+            searchQuery = '';
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.value = '';
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (clearBtn) clearBtn.classList.add('hidden');
+            const diffFilter = document.getElementById('difficultyFilter');
+            if (diffFilter) diffFilter.value = 'all';
+            const showAllBtn = document.getElementById('showAllCategoriesBtn');
+            if (showAllBtn) showAllBtn.classList.add('hidden');
+            const titleEl = document.getElementById('guidesSectionTitle');
+            if (titleEl) {
+                titleEl.innerHTML = `<i class="fa-solid fa-book-medical text-brand-600 mr-2.5"></i>คู่มือแก้ไขปัญหาทั้งหมด`;
+            }
+            renderCategories();
+            applyFilters();
+        }
+
+        function renderGuides(guidesToRender) {
+            const grid = document.getElementById('guidesGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countText = document.getElementById('guidesCountText');
+
+            countText.textContent = `กำลังแสดง ${guidesToRender.length} คู่มือที่พร้อมใช้งาน`;
+
+            if (guidesToRender.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = guidesToRender.map(guide => {
+                const catObj = categories.find(c => c.id === guide.category) || categories[0];
+                const diffBadgeColor = guide.difficulty === 'ง่าย' 
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                    : 'bg-amber-50 text-amber-700 border-amber-200';
+
+                return `
+                    <div onclick="openGuideModal('${guide.id}')" 
+                        class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-200 cursor-pointer flex flex-col justify-between group fade-in">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="inline-flex items-center space-x-1.5 text-xs font-medium px-2.5 py-1 rounded-lg ${catObj.bg} ${catObj.color}">
+                                    <i class="fa-solid ${catObj.icon}"></i>
+                                    <span class="truncate max-w-[130px]">${catObj.name.split(' ')[0]}</span>
+                                </span>
+                                <div class="flex items-center space-x-1.5">
+                                    <span class="text-[11px] font-medium px-2 py-0.5 rounded-md border ${diffBadgeColor}">
+                                        ${guide.difficulty} • ${guide.time}
+                                    </span>
+                                    <button type="button" onclick="event.stopPropagation(); openEditGuideModal('${guide.id}')" title="แก้ไขคู่มือ" 
+                                        class="text-slate-400 hover:text-amber-700 hover:bg-amber-50 p-1.5 rounded-lg transition">
+                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <h3 class="font-bold text-slate-800 text-base sm:text-lg mb-2 group-hover:text-brand-600 transition leading-snug">
+                                ${guide.title}
+                            </h3>
+
+                            <p class="text-slate-500 text-xs sm:text-sm line-clamp-2 font-body leading-relaxed">
+                                ${guide.symptom}
+                            </p>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-brand-600">
+                            <span>ดูขั้นตอนแก้ไข (${guide.steps.length} ขั้น)</span>
+                            <span class="w-7 h-7 rounded-full bg-brand-50 group-hover:bg-brand-600 group-hover:text-white flex items-center justify-center transition">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function applyFilters() {
+            const diffFilter = document.getElementById('difficultyFilter').value;
+
+            const filtered = allGuides.filter(guide => {
+                const matchCat = selectedCategory === 'all' || guide.category === selectedCategory;
+                const matchDiff = diffFilter === 'all' || guide.difficulty === diffFilter;
+
+                let matchSearch = true;
+                if (searchQuery) {
+                    const inTitle = guide.title.toLowerCase().includes(searchQuery);
+                    const inSymptom = guide.symptom.toLowerCase().includes(searchQuery);
+                    const inKeywords = guide.keywords && guide.keywords.some(k => k.toLowerCase().includes(searchQuery));
+                    const inSteps = guide.steps.some(s => s.toLowerCase().includes(searchQuery));
+                    matchSearch = inTitle || inSymptom || inKeywords || inSteps;
+                }
+
+                return matchCat && matchDiff && matchSearch;
+            });
+
+            renderGuides(filtered);
+        }
+
+        function openGuideModal(guideId) {
+            const guide = allGuides.find(g => g.id === guideId);
+            if (!guide) return;
+
+            currentOpenedGuide = guide;
+            const catObj = categories.find(c => c.id === guide.category) || categories[0];
+
+            document.getElementById('modalCategoryBadge').textContent = catObj.name;
+            document.getElementById('modalMetaBadge').innerHTML = `<i class="fa-regular fa-clock mr-1"></i> ${guide.difficulty} • ใช้เวลาประมาณ ${guide.time}`;
+            document.getElementById('modalTitle').textContent = guide.title;
+            document.getElementById('modalSymptom').textContent = guide.symptom;
+
+            const warningBox = document.getElementById('modalWarningBox');
+            if (guide.warning && guide.warning.trim() !== '') {
+                document.getElementById('modalWarningText').textContent = guide.warning;
+                warningBox.classList.remove('hidden');
+            } else {
+                warningBox.classList.add('hidden');
+            }
+
+            const stepsContainer = document.getElementById('modalStepsContainer');
+            stepsContainer.innerHTML = guide.steps.map((step, index) => `
+                <div class="flex items-start space-x-3 bg-white p-3.5 rounded-xl border border-slate-200 hover:border-brand-300 transition">
+                    <div class="flex items-center h-6">
+                        <input id="step_${index}" type="checkbox" onchange="updateStepProgress()" 
+                            class="step-checkbox w-5 h-5 text-brand-600 bg-slate-100 border-slate-300 rounded focus:ring-brand-500 cursor-pointer">
+                    </div>
+                    <label for="step_${index}" class="text-sm sm:text-base text-slate-700 leading-relaxed cursor-pointer select-none flex-1">
+                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-brand-100 text-brand-700 font-bold text-xs mr-1.5 font-sans">${index + 1}</span>
+                        ${step}
+                    </label>
+                </div>
+            `).join('');
+
+            updateStepProgress();
+
+            const noteBox = document.getElementById('modalNoteBox');
+            if (guide.note && guide.note.trim() !== '') {
+                document.getElementById('modalNoteText').textContent = guide.note;
+                noteBox.classList.remove('hidden');
+            } else {
+                noteBox.classList.add('hidden');
+            }
+
+            document.getElementById('feedbackPrompt').classList.remove('hidden');
+            document.getElementById('feedbackSuccessMsg').classList.add('hidden');
+
+            document.getElementById('guideModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function editCurrentGuide() {
+            if (!currentOpenedGuide) return;
+            openEditGuideModal(currentOpenedGuide.id);
+        }
+
+        function updateStepProgress() {
+            const checkboxes = document.querySelectorAll('#modalStepsContainer .step-checkbox');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            document.getElementById('stepProgressText').textContent = `${checkedCount}/${checkboxes.length} ขั้นตอน`;
+        }
+
+        function handleGuideSuccess() {
+            document.getElementById('feedbackPrompt').classList.add('hidden');
+            document.getElementById('feedbackSuccessMsg').classList.remove('hidden');
+            showToast('บันทึกผลการแก้ไขสำเร็จ ขอบคุณที่ใช้บริการครับ!');
+        }
+
+        function handleGuideFailed() {
+            closeModal('guideModal');
+            showToast('กำลังเปิดแบบฟอร์มแจ้งซ่อม Google Form ของฝ่าย IT...');
+        }
+
+        function openWizardModal() {
+            resetWizard();
+            document.getElementById('wizardModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function resetWizard() {
+            wizardHistory = ['start'];
+            renderWizardStep('start');
+        }
+
+        function wizardGoBack() {
+            if (wizardHistory.length > 1) {
+                wizardHistory.pop();
+                const prevNode = wizardHistory[wizardHistory.length - 1];
+                renderWizardStep(prevNode);
+            }
+        }
+
+        function renderWizardStep(nodeKey) {
+            const node = wizardData[nodeKey];
+            const container = document.getElementById('wizardContent');
+            const backBtn = document.getElementById('wizardBackBtn');
+
+            if (wizardHistory.length > 1) {
+                backBtn.classList.remove('hidden');
+            } else {
+                backBtn.classList.add('hidden');
+            }
+
+            container.innerHTML = `
+                <div class="fade-in">
+                    <div class="inline-block bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-full mb-2">
+                        คำถามที่ ${wizardHistory.length}
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-800 mb-1">${node.question}</h4>
+                    ${node.subtitle ? `<p class="text-xs text-slate-500 mb-4">${node.subtitle}</p>` : '<div class="mb-4"></div>'}
+                    
+                    <div class="space-y-2.5">
+                        ${node.options.map((opt, idx) => `
+                            <button onclick="handleWizardChoice('${nodeKey}', ${idx})" 
+                                class="w-full text-left p-3.5 rounded-xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/50 transition flex items-center justify-between group">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-9 h-9 rounded-lg bg-slate-100 group-hover:bg-indigo-100 text-slate-600 group-hover:text-indigo-600 flex items-center justify-center transition">
+                                        <i class="fa-solid ${opt.icon}"></i>
+                                    </div>
+                                    <span class="font-medium text-sm text-slate-700 group-hover:text-indigo-900">${opt.label}</span>
+                                </div>
+                                <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-indigo-600 text-xs"></i>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleWizardChoice(nodeKey, optionIdx) {
+            const chosenOption = wizardData[nodeKey].options[optionIdx];
+
+            if (chosenOption.next) {
+                wizardHistory.push(chosenOption.next);
+                renderWizardStep(chosenOption.next);
+            } else if (chosenOption.resultGuideId) {
+                const guide = allGuides.find(g => g.id === chosenOption.resultGuideId);
+                const container = document.getElementById('wizardContent');
+                container.innerHTML = `
+                    <div class="text-center py-2 fade-in">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">พบวิธีแก้ไขที่ตรงกับอาการของคุณ!</span>
+                        <h4 class="text-lg font-bold text-slate-900 mt-3 mb-2">${guide.title}</h4>
+                        <p class="text-xs sm:text-sm text-slate-500 mb-5">${guide.symptom}</p>
+                        
+                        <div class="space-y-2.5">
+                            <button onclick="closeModal('wizardModal'); openGuideModal('${guide.id}')" 
+                            class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 rounded-xl text-sm shadow-md transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-book-open"></i>
+                            <span>เปิดดูขั้นตอนการแก้ไข (${guide.steps.length} ขั้นตอน)</span>
+                        </button>
+                        <a href="https://forms.gle/fff7x8SoXVQhGJ1x8" target="_blank" rel="noopener noreferrer" onclick="showToast('กำลังเปิดแบบฟอร์มแจ้งปัญหาฝ่าย IT ในแท็บใหม่...')"
+                            class="mt-2.5 w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-medium py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-ticket text-brand-600"></i>
+                            <span>เปิดแบบฟอร์มแจ้งซ่อม Google Form ฝ่าย IT</span>
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        function openAdminModal() {
+            document.getElementById('adminForm').reset();
+            document.getElementById('adminModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function saveNewGuide(e) {
+            e.preventDefault();
+            const title = document.getElementById('aTitle').value.trim();
+            const category = document.getElementById('aCategory').value;
+            const difficulty = document.getElementById('aDifficulty').value;
+            const time = document.getElementById('aTime').value.trim() || '3 นาที';
+            const symptom = document.getElementById('aSymptom').value.trim();
+            const keywordsRaw = document.getElementById('aKeywords').value;
+            const stepsRaw = document.getElementById('aSteps').value;
+            const warning = document.getElementById('aWarning').value.trim();
+
+            const keywords = keywordsRaw.split(',').map(k => k.trim()).filter(k => k !== '');
+            const steps = stepsRaw.split('\n').map(s => s.trim()).filter(s => s !== '');
+
+            if (steps.length === 0) {
+                showToast('กรุณากรอกขั้นตอนการแก้ไขอย่างน้อย 1 ขั้นตอน');
+                return;
+            }
+
+            const newGuide = {
+                id: 'custom_' + Date.now(),
+                category,
+                title,
+                difficulty,
+                time,
+                symptom,
+                keywords,
+                warning,
+                note: '',
+                steps
+            };
+
+            allGuides.unshift(newGuide);
+            saveGuidesToStorage();
+            renderCategories();
+            applyFilters();
+            closeModal('adminModal');
+            showToast('เพิ่มคู่มือแก้ไขปัญหาใหม่เรียบร้อยแล้ว!');
+        }
+
+        function resetCustomGuides() {
+            resetAllGuidesToDefault();
+            closeModal('adminModal');
+        }
+
+        function openEditGuideModal(guideId) {
+            const guide = allGuides.find(g => g.id === guideId);
+            if (!guide) return;
+
+            document.getElementById('eGuideId').value = guide.id;
+            document.getElementById('eTitle').value = guide.title || '';
+            document.getElementById('eCategory').value = guide.category || 'network';
+            document.getElementById('eDifficulty').value = guide.difficulty || 'ง่าย';
+            document.getElementById('eTime').value = guide.time || '3 นาที';
+            document.getElementById('eSymptom').value = guide.symptom || '';
+            document.getElementById('eKeywords').value = Array.isArray(guide.keywords) ? guide.keywords.join(', ') : '';
+            document.getElementById('eWarning').value = guide.warning || '';
+            document.getElementById('eNote').value = guide.note || '';
+
+            const stepsList = document.getElementById('editStepsList');
+            stepsList.innerHTML = '';
+            const stepsArray = Array.isArray(guide.steps) && guide.steps.length > 0 ? guide.steps : [''];
+            stepsArray.forEach(stepText => addEditStepRow(stepText));
+
+            document.getElementById('editGuideModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function addEditStepRow(value = '') {
+            const stepsList = document.getElementById('editStepsList');
+            const row = document.createElement('div');
+            row.className = 'edit-step-row flex items-center space-x-2';
+            row.innerHTML = `
+                <span class="step-index-badge w-6 h-6 rounded-full bg-amber-100 text-amber-800 text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                <input type="text" value="${escapeHtmlAttr(value)}" placeholder="ระบุขั้นตอนการแก้ไข..." class="edit-step-input flex-1 border border-slate-300 rounded-xl px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                <button type="button" onclick="removeEditStepRow(this)" title="ลบขั้นตอนนี้" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition shrink-0">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+            `;
+            stepsList.appendChild(row);
+            refreshStepRowNumbers();
+        }
+
+        function removeEditStepRow(btnEl) {
+            const rows = document.querySelectorAll('#editStepsList .edit-step-row');
+            if (rows.length <= 1) {
+                showToast('ต้องมีขั้นตอนการแก้ไขอย่างน้อย 1 ขั้นตอนครับ');
+                return;
+            }
+            btnEl.closest('.edit-step-row').remove();
+            refreshStepRowNumbers();
+        }
+
+        function refreshStepRowNumbers() {
+            const badges = document.querySelectorAll('#editStepsList .step-index-badge');
+            badges.forEach((badge, idx) => {
+                badge.textContent = idx + 1;
+            });
+        }
+
+        function saveEditedGuide(e) {
+            e.preventDefault();
+            const guideId = document.getElementById('eGuideId').value;
+            const idx = allGuides.findIndex(g => g.id === guideId);
+            if (idx === -1) return;
+
+            const title = document.getElementById('eTitle').value.trim();
+            const category = document.getElementById('eCategory').value;
+            const difficulty = document.getElementById('eDifficulty').value;
+            const time = document.getElementById('eTime').value.trim() || '3 นาที';
+            const symptom = document.getElementById('eSymptom').value.trim();
+            const keywords = document.getElementById('eKeywords').value
+                .split(',')
+                .map(k => k.trim())
+                .filter(k => k !== '');
+            const warning = document.getElementById('eWarning').value.trim();
+            const note = document.getElementById('eNote').value.trim();
+
+            const steps = Array.from(document.querySelectorAll('#editStepsList .edit-step-input'))
+                .map(input => input.value.trim())
+                .filter(s => s !== '');
+
+            if (steps.length === 0) {
+                showToast('กรุณากรอกขั้นตอนการแก้ไขอย่างน้อย 1 ขั้นตอน');
+                return;
+            }
+
+            const updatedGuide = {
+                ...allGuides[idx],
+                title,
+                category,
+                difficulty,
+                time,
+                symptom,
+                keywords,
+                warning,
+                note,
+                steps
+            };
+
+            allGuides[idx] = updatedGuide;
+            saveGuidesToStorage();
+            renderCategories();
+            applyFilters();
+
+            if (currentOpenedGuide && currentOpenedGuide.id === guideId) {
+                openGuideModal(guideId);
+            }
+
+            closeModal('editGuideModal');
+            showToast('บันทึกการแก้ไขคู่มือเรียบร้อยแล้ว');
+        }
+
+        function resetAllGuidesToDefault() {
+            allGuides = JSON.parse(JSON.stringify(defaultGuides));
+            saveGuidesToStorage();
+            renderCategories();
+            applyFilters();
+            closeModal('editGuideModal');
+            if (currentOpenedGuide) {
+                const exists = allGuides.some(g => g.id === currentOpenedGuide.id);
+                if (exists) {
+                    openGuideModal(currentOpenedGuide.id);
+                } else {
+                    closeModal('guideModal');
+                }
+            }
+            showToast('รีเซ็ตคู่มือกลับเป็นค่าเริ่มต้นเรียบร้อยแล้ว');
+        }
+
+        function escapeHtmlAttr(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            const anyOpen = ['guideModal', 'wizardModal', 'adminModal', 'editGuideModal'].some(id => {
+                const el = document.getElementById(id);
+                return el && !el.classList.contains('hidden');
+            });
+            if (!anyOpen) {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            ['guideModal', 'wizardModal', 'adminModal', 'editGuideModal'].forEach(id => {
+                const modal = document.getElementById(id);
+                if (e.target === modal) {
+                    closeModal(id);
+                }
+            });
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                ['guideModal', 'wizardModal', 'adminModal', 'editGuideModal'].forEach(closeModal);
+            }
+        });
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
